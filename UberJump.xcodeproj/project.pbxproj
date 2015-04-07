@@ -14,6 +14,7 @@
 		FE0B16C31AD30C98003E6D48 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FE0B16C21AD30C98003E6D48 /* Images.xcassets */; };
 		FE0B16C61AD30C98003E6D48 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = FE0B16C41AD30C98003E6D48 /* LaunchScreen.xib */; };
 		FE0B16D21AD30C98003E6D48 /* UberJumpTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE0B16D11AD30C98003E6D48 /* UberJumpTests.swift */; };
+		FE3D642B1AD36CAB005B34E7 /* GameObjectNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE3D642A1AD36CAB005B34E7 /* GameObjectNode.swift */; };
 		FE5451C71AD30D2C0036CDA1 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = FE5451C61AD30D2C0036CDA1 /* README.md */; };
 		FE5451F51AD30F750036CDA1 /* Assets.atlas in Resources */ = {isa = PBXBuildFile; fileRef = FE5451C91AD30F750036CDA1 /* Assets.atlas */; };
 		FE5451F61AD30F750036CDA1 /* Background.png in Resources */ = {isa = PBXBuildFile; fileRef = FE5451CB1AD30F750036CDA1 /* Background.png */; };
@@ -82,6 +83,7 @@
 		FE0B16CB1AD30C98003E6D48 /* UberJumpTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = UberJumpTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE0B16D01AD30C98003E6D48 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FE0B16D11AD30C98003E6D48 /* UberJumpTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UberJumpTests.swift; sourceTree = "<group>"; };
+		FE3D642A1AD36CAB005B34E7 /* GameObjectNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameObjectNode.swift; sourceTree = "<group>"; };
 		FE5451C61AD30D2C0036CDA1 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		FE5451C91AD30F750036CDA1 /* Assets.atlas */ = {isa = PBXFileReference; lastKnownFileType = folder.skatlas; path = Assets.atlas; sourceTree = "<group>"; };
 		FE5451CB1AD30F750036CDA1 /* Background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Background.png; sourceTree = "<group>"; };
@@ -170,6 +172,7 @@
 				FE5451C61AD30D2C0036CDA1 /* README.md */,
 				FE0B16B71AD30C98003E6D48 /* AppDelegate.swift */,
 				FE0B16BB1AD30C98003E6D48 /* GameScene.swift */,
+				FE3D642A1AD36CAB005B34E7 /* GameObjectNode.swift */,
 				FE0B16BD1AD30C98003E6D48 /* GameViewController.swift */,
 				FE0B16BF1AD30C98003E6D48 /* Main.storyboard */,
 				FE0B16C21AD30C98003E6D48 /* Images.xcassets */,
@@ -406,6 +409,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FE3D642B1AD36CAB005B34E7 /* GameObjectNode.swift in Sources */,
 				FE0B16BC1AD30C98003E6D48 /* GameScene.swift in Sources */,
 				FE0B16BE1AD30C98003E6D48 /* GameViewController.swift in Sources */,
 				FE5451C71AD30D2C0036CDA1 /* README.md in Sources */,
