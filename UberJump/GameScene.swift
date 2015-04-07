@@ -50,6 +50,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		backgroundNode = createBackgroundNode()
 		addChild(backgroundNode)
 
+		// Midground
+		midgroundNode = createMidgroundNode()
+		addChild(midgroundNode)
+
 		// Foreground
 		foregroundNode = SKNode()
 		addChild(foregroundNode)
@@ -181,6 +185,42 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		playerNode.physicsBody?.contactTestBitMask = CollisionCategoryBitmask.Star | CollisionCategoryBitmask.Platform
 
 		return playerNode
+	}
+
+	// Set up the mid ground layer
+	func createMidgroundNode() -> SKNode {
+
+		// Create the node
+		let theMidgroundNode = SKNode()
+		var anchor: CGPoint!
+		var xPosition: CGFloat!
+
+		// 1
+		// Add some branches to the midground
+		for index in 0...9 {
+			var spriteName: String
+
+			// 2
+			let r = arc4random() % 2
+			if r > 0 {
+				spriteName = "BranchRight"
+				anchor = CGPoint(x: 1.0, y: 0.5)
+				xPosition = self.size.width
+			} else {
+				spriteName = "BranchLeft"
+				anchor = CGPoint(x: 0.0, y: 0.5)
+				xPosition = 0.0
+			}
+
+			// 3
+			let branchNode = SKSpriteNode(imageNamed: spriteName)
+			branchNode.anchorPoint = anchor
+			branchNode.position = CGPoint(x: xPosition, y: 500.0 * CGFloat(index))
+			theMidgroundNode.addChild(branchNode)
+		}
+
+		// Return the completed midground node
+		return theMidgroundNode
 	}
 
 	// Handle touch events
