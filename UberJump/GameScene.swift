@@ -25,6 +25,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	// Tap To Start node
 	let tapToStartNode = SKSpriteNode(imageNamed: "TapToStart")
 
+	// To support levels
+	// Height at which level ends
+	let endLevelY = 0
+
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
 	}
@@ -50,13 +54,58 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		foregroundNode = SKNode()
 		addChild(foregroundNode)
 
-		// Add a platform
-		let platform = createPlatformAtPosition(CGPoint(x: 160, y: 320), ofType: .Normal)
-		foregroundNode.addChild(platform)
+		// Load the level
+		let levelPlist = NSBundle.mainBundle().pathForResource("Level01", ofType: "plist")
+		let levelData = NSDictionary(contentsOfFile: levelPlist!)!
+		
+		// Height at which the player ends the level
+		endLevelY = levelData["EndY"]!.integerValue!
 
-		// Add a star
-		let star = createStarAtPosition(CGPoint(x: 160, y: 220), ofType: .Special)
-		foregroundNode.addChild(star)
+		// Add the platforms
+		let platforms = levelData["Platforms"] as NSDictionary
+		let platformPatterns = platforms["Patterns"] as NSDictionary
+		let platformPositions = platforms["Positions"] as [NSDictionary]
+
+		for platformPosition in platformPositions {
+			let patternX = platformPosition["x"]?.floatValue
+			let patternY = platformPosition["y"]?.floatValue
+			let pattern = platformPosition["pattern"] as NSString
+
+			// Look up the pattern
+			let platformPattern = platformPatterns[pattern] as [NSDictionary]
+			for platformPoint in platformPattern {
+				let x = platformPoint["x"]?.floatValue
+				let y = platformPoint["y"]?.floatValue
+				let type = PlatformType(rawValue: platformPoint["type"]!.integerValue)
+				let positionX = CGFloat(x! + patternX!)
+				let positionY = CGFloat(y! + patternY!)
+				let platformNode = createPlatformAtPosition(CGPoint(x: positionX, y: positionY), ofType: type!)
+				foregroundNode.addChild(platformNode)
+			}
+		}
+
+		// Add the stars
+		let stars = levelData["Stars"] as NSDictionary
+		let starPatterns = stars["Patterns"] as NSDictionary
+		let starPositions = stars["Positions"] as [NSDictionary]
+
+		for starPosition in starPositions {
+			let patternX = starPosition["x"]?.floatValue
+			let patternY = starPosition["y"]?.floatValue
+			let pattern = starPosition["pattern"] as NSString
+
+			// Look up the pattern
+			let starPattern = starPatterns[pattern] as [NSDictionary]
+			for starPoint in starPattern {
+				let x = starPoint["x"]?.floatValue
+				let y = starPoint["y"]?.floatValue
+				let type = StarType(rawValue: starPoint["type"]!.integerValue)
+				let positionX = CGFloat(x! + patternX!)
+				let positionY = CGFloat(y! + patternY!)
+				let starNode = createStarAtPosition(CGPoint(x: positionX, y: positionY), ofType: type!)
+				foregroundNode.addChild(starNode)
+			}
+		}
 
 		// Add the player
 		player = createPlayer()
