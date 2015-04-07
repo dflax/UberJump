@@ -20,6 +20,11 @@ enum StarType: Int {
 	case Special
 }
 
+enum PlatformType: Int {
+	case Normal = 0
+	case Break
+}
+
 class GameObjectNode: SKNode {
 
 	func collisionWithPlayer(player: SKNode) -> Bool {
@@ -37,6 +42,10 @@ class GameObjectNode: SKNode {
 // Star node for game objects
 class StarNode: GameObjectNode {
 
+	// Set the sound for collisions
+	let starSound = SKAction.playSoundFileNamed("StarPing.wav", waitForCompletion: false)
+
+	// What kind of star
 	var starType: StarType!
 
 	override func collisionWithPlayer(player: SKNode) -> Bool {
@@ -45,12 +54,45 @@ class StarNode: GameObjectNode {
 		player.physicsBody?.velocity = CGVector(dx: player.physicsBody!.velocity.dx, dy: 400.0)
 
 		// Remove this Star
-		self.removeFromParent()
+		// Play sound
+		runAction(starSound, completion: {
+			// Remove this Star
+			self.removeFromParent()
+		})
 
 		// The HUD needs updating to show the new stars and score
 		return true
 	}
 }
+
+
+// PlatformNode
+class PlatformNode: GameObjectNode {
+
+	var platformType: PlatformType!
+
+	override func collisionWithPlayer(player: SKNode) -> Bool {
+		// 1
+		// Only bounce the player if he's falling
+		if player.physicsBody?.velocity.dy < 0 {
+			// 2
+			player.physicsBody?.velocity = CGVector(dx: player.physicsBody!.velocity.dx, dy: 250.0)
+
+			// 3
+			// Remove if it is a Break type platform
+			if platformType == .Break {
+				self.removeFromParent()
+			}
+		}
+
+		// 4
+		// No stars for platforms
+		return false
+	}
+}
+
+
+
 
 
 

@@ -50,6 +50,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		foregroundNode = SKNode()
 		addChild(foregroundNode)
 
+		// Add a platform
+		let platform = createPlatformAtPosition(CGPoint(x: 160, y: 320), ofType: .Normal)
+		foregroundNode.addChild(platform)
+
 		// Add a star
 		let star = createStarAtPosition(CGPoint(x: 160, y: 220), ofType: .Special)
 		foregroundNode.addChild(star)
@@ -160,10 +164,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		node.name = "NODE_STAR"
 
 		// 2
-//		var sprite: SKSpriteNode
-//		sprite = SKSpriteNode(imageNamed: "Star")
-//		node.addChild(sprite)
-
 		node.starType = type
 		var sprite: SKSpriteNode
 		if type == .Special {
@@ -178,7 +178,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 		// 4
 		node.physicsBody?.dynamic = false
-
 		node.physicsBody?.categoryBitMask = CollisionCategoryBitmask.Star
 		node.physicsBody?.collisionBitMask = 0
 
@@ -201,6 +200,33 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		if updateHUD {
 			// 4 TODO: Update HUD in Part 2
 		}
+	}
+
+	// Add platform nodes for player to bounce off of
+	func createPlatformAtPosition(position: CGPoint, ofType type: PlatformType) -> PlatformNode {
+		// 1
+		let node = PlatformNode()
+		let thePosition = CGPoint(x: position.x * scaleFactor, y: position.y)
+		node.position = thePosition
+		node.name = "NODE_PLATFORM"
+		node.platformType = type
+
+		// 2
+		var sprite: SKSpriteNode
+		if type == .Break {
+			sprite = SKSpriteNode(imageNamed: "PlatformBreak")
+		} else {
+			sprite = SKSpriteNode(imageNamed: "Platform")
+		}
+		node.addChild(sprite)
+
+		// 3
+		node.physicsBody = SKPhysicsBody(rectangleOfSize: sprite.size)
+		node.physicsBody?.dynamic = false
+		node.physicsBody?.categoryBitMask = CollisionCategoryBitmask.Platform
+		node.physicsBody?.collisionBitMask = 0
+
+		return node
 	}
 
 
