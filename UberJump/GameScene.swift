@@ -7,6 +7,7 @@
 //
 
 import SpriteKit
+import CoreMotion
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
 
@@ -28,6 +29,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	// To support levels
 	// Height at which level ends
 	let endLevelY = 0
+
+	// Motion manager for accelerometer
+	let motionManager: CMMotionManager = CMMotionManager()
+
+	// Acceleration value from accelerometer
+	var xAcceleration: CGFloat = 0.0
 
 	required init?(coder aDecoder: NSCoder) {
 		super.init(coder: aDecoder)
@@ -123,8 +130,32 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		tapToStartNode.position = CGPoint(x: self.size.width / 2, y: 180.0)
 		hudNode.addChild(tapToStartNode)
 
+		// CoreMotion
+		// 1
+		motionManager.accelerometerUpdateInterval = 0.2
+		// 2
+		motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue(), withHandler: {
+			(accelerometerData: CMAccelerometerData!, error: NSError!) in
+			// 3
+			let acceleration = accelerometerData.acceleration
+			// 4
+			self.xAcceleration = (CGFloat(acceleration.x) * 0.75) + (self.xAcceleration * 0.25)
+		})
+
 	}
 
+	// Add logic to scroll the different layers at different paces - parallax
+	override func update(currentTime: NSTimeInterval) {
+
+		// Calculate player y offset
+		if player.position.y > 200.0 {
+			backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/10))
+			midgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/4))
+			foregroundNode.position = CGPoint(x: 0.0, y: -(player.position.y - 200.0))
+		}
+	}
+
+	// Create the background node
 	func createBackgroundNode() -> SKNode {
 		// 1
 		// Create the node
@@ -316,6 +347,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		node.physicsBody?.collisionBitMask = 0
 
 		return node
+	}
+
+	// Did simulate physics - use the acceleration data to move the player
+	override func didSimulatePhysics() {
+		// 1
+		// Set velocity based on x-axis acceleration
+		player.physicsBody?.velocity = CGVector(dx: xAcceleration * 400.0, dy: player.physicsBody!.velocity.dy)
+		// 2
+		// Check x bounds
+		if player.position.x < -20.0 {
+			player.position = CGPoint(x: self.size.width + 20.0, y: player.position.y)
+		} else if (player.position.x > self.size.width + 20.0) {
+			player.position = CGPoint(x: -20.0, y: player.position.y)
+		}
 	}
 
 
