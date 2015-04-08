@@ -36,11 +36,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	// Acceleration value from accelerometer
 	var xAcceleration: CGFloat = 0.0
 
+	// Labels for score and stars
+	var lblScore: SKLabelNode!
+	var lblStars: SKLabelNode!
+
+	// Max y reached by player
+	var maxPlayerY: Int
+
+	// Game over dude!
+	var gameOver = false
+
 	required init?(coder aDecoder: NSCoder) {
+
+		// Reset
+		maxPlayerY = 80
+		GameState.sharedInstance.score = 0
+		gameOver = false
+
 		super.init(coder: aDecoder)
 	}
 
 	override init(size: CGSize) {
+
+		// Reset
+		maxPlayerY = 80
+
 		super.init(size: size)
 		backgroundColor = SKColor.whiteColor()
 
@@ -130,9 +150,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		tapToStartNode.position = CGPoint(x: self.size.width / 2, y: 180.0)
 		hudNode.addChild(tapToStartNode)
 
-		// CoreMotion
+		// Build the HUD
+
+		// Stars
+		// 1
+		let star = SKSpriteNode(imageNamed: "Star")
+		star.position = CGPoint(x: 25, y: self.size.height-30)
+		hudNode.addChild(star)
+
+		// 2
+		lblStars = SKLabelNode(fontNamed: "ChalkboardSE-Bold")
+		lblStars.fontSize = 30
+		lblStars.fontColor = SKColor.whiteColor()
+		lblStars.position = CGPoint(x: 50, y: self.size.height-40)
+		lblStars.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Left
+
+		// 3
+		lblStars.text = String(format: "X %d", GameState.sharedInstance.stars)
+		hudNode.addChild(lblStars)
+
+		// Score
+		// 4
+		lblScore = SKLabelNode(fontNamed: "ChalkboardSE-Bold")
+		lblScore.fontSize = 30
+		lblScore.fontColor = SKColor.whiteColor()
+		lblScore.position = CGPoint(x: self.size.width-20, y: self.size.height-40)
+		lblScore.horizontalAlignmentMode = SKLabelHorizontalAlignmentMode.Right
+
+		// 5
+		lblScore.text = "0"
+		hudNode.addChild(lblScore)
+
+		// CoreMotion - Load the motion manager
 		// 1
 		motionManager.accelerometerUpdateInterval = 0.2
+
 		// 2
 		motionManager.startAccelerometerUpdatesToQueue(NSOperationQueue.currentQueue(), withHandler: {
 			(accelerometerData: CMAccelerometerData!, error: NSError!) in
@@ -147,12 +199,57 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	// Add logic to scroll the different layers at different paces - parallax
 	override func update(currentTime: NSTimeInterval) {
 
+		// Make sure that the GameOver Sequence is never called more than once
+		if gameOver {
+			return
+		}
+
+		// New max height ?
+		// 1
+		if Int(player.position.y) > maxPlayerY {
+
+			// 2
+			GameState.sharedInstance.score += Int(player.position.y) - maxPlayerY
+
+			// 3
+			maxPlayerY = Int(player.position.y)
+
+			// 4
+			lblScore.text = String(format: "%d", GameState.sharedInstance.score)
+		}
+
+		// Remove game objects that have passed by
+		foregroundNode.enumerateChildNodesWithName("NODE_PLATFORM", usingBlock: {
+			(node, stop) in
+			let platform = node as PlatformNode
+			platform.checkNodeRemoval(self.player.position.y)
+		})
+
+		foregroundNode.enumerateChildNodesWithName("NODE_STAR", usingBlock: {
+			(node, stop) in
+			let star = node as StarNode
+			star.checkNodeRemoval(self.player.position.y)
+		})
+
 		// Calculate player y offset
 		if player.position.y > 200.0 {
 			backgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/10))
 			midgroundNode.position = CGPoint(x: 0.0, y: -((player.position.y - 200.0)/4))
 			foregroundNode.position = CGPoint(x: 0.0, y: -(player.position.y - 200.0))
 		}
+
+		// 1
+		// Check if we've finished the level
+		if Int(player.position.y) > endLevelY {
+			endGame()
+		}
+
+		// 2
+		// Check if we've fallen too far
+		if Int(player.position.y) < maxPlayerY - 800 {
+			endGame()
+		}
+
 	}
 
 	// Create the background node
@@ -318,8 +415,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 		// Update the HUD if necessary
 		if updateHUD {
-			// 4 TODO: Update HUD in Part 2
-		}
+			lblStars.text = String(format: "X %d", GameState.sharedInstance.stars)
+			lblScore.text = String(format: "%d", GameState.sharedInstance.score)		}
 	}
 
 	// Add platform nodes for player to bounce off of
@@ -361,6 +458,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		} else if (player.position.x > self.size.width + 20.0) {
 			player.position = CGPoint(x: -20.0, y: player.position.y)
 		}
+	}
+
+	func endGame() {
+		// 1
+		gameOver = true
+
+		// 2
+		// Save stars and high score
+		GameState.sharedInstance.saveState()
+
+		// 3
+		let reveal = SKTransition.fadeWithDuration(0.5)
+		let endGameScene = EndGameScene(size: self.size)
+		self.view!.presentScene(endGameScene, transition: reveal)
 	}
 
 
