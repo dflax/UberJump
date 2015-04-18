@@ -12,29 +12,29 @@ import CoreMotion
 class GameScene: SKScene, SKPhysicsContactDelegate {
 
 	// Layered Nodes
-	let backgroundNode = SKNode()
-	let midgroundNode = SKNode()
-	let foregroundNode = SKNode()
-	let hudNode = SKNode()
+	lazy var backgroundNode = SKNode()
+	lazy var midgroundNode = SKNode()
+	lazy var foregroundNode = SKNode()
+	lazy var hudNode = SKNode()
 
 	// Player
-	let player = SKNode()
+	lazy var player = SKNode()
 
 	// To Accommodate iPhone 6
-	let scaleFactor: CGFloat = 0.0
+	lazy var scaleFactor: CGFloat = 0.0
 
 	// Tap To Start node
-	let tapToStartNode = SKSpriteNode(imageNamed: "TapToStart")
+	lazy var tapToStartNode = SKSpriteNode(imageNamed: "TapToStart")
 
 	// To support levels
 	// Height at which level ends
-	let endLevelY = 0
+	lazy var endLevelY = 0
 
 	// Motion manager for accelerometer
-	let motionManager: CMMotionManager = CMMotionManager()
+	lazy var motionManager: CMMotionManager = CMMotionManager()
 
 	// Acceleration value from accelerometer
-	var xAcceleration: CGFloat = 0.0
+	lazy var xAcceleration: CGFloat = 0.0
 
 	// Labels for score and stars
 	var lblScore: SKLabelNode!
@@ -93,17 +93,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		endLevelY = levelData["EndY"]!.integerValue!
 
 		// Add the platforms
-		let platforms = levelData["Platforms"] as NSDictionary
-		let platformPatterns = platforms["Patterns"] as NSDictionary
-		let platformPositions = platforms["Positions"] as [NSDictionary]
+		let platforms = levelData["Platforms"] as! NSDictionary
+		let platformPatterns = platforms["Patterns"] as! NSDictionary
+		let platformPositions = platforms["Positions"] as! [NSDictionary]
 
 		for platformPosition in platformPositions {
 			let patternX = platformPosition["x"]?.floatValue
 			let patternY = platformPosition["y"]?.floatValue
-			let pattern = platformPosition["pattern"] as NSString
+			let pattern = platformPosition["pattern"] as! NSString
 
 			// Look up the pattern
-			let platformPattern = platformPatterns[pattern] as [NSDictionary]
+			let platformPattern = platformPatterns[pattern] as! [NSDictionary]
 			for platformPoint in platformPattern {
 				let x = platformPoint["x"]?.floatValue
 				let y = platformPoint["y"]?.floatValue
@@ -116,17 +116,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		}
 
 		// Add the stars
-		let stars = levelData["Stars"] as NSDictionary
-		let starPatterns = stars["Patterns"] as NSDictionary
-		let starPositions = stars["Positions"] as [NSDictionary]
+		let stars = levelData["Stars"] as! NSDictionary
+		let starPatterns = stars["Patterns"] as! NSDictionary
+		let starPositions = stars["Positions"] as! [NSDictionary]
 
 		for starPosition in starPositions {
 			let patternX = starPosition["x"]?.floatValue
 			let patternY = starPosition["y"]?.floatValue
-			let pattern = starPosition["pattern"] as NSString
+			let pattern = starPosition["pattern"] as! NSString
 
 			// Look up the pattern
-			let starPattern = starPatterns[pattern] as [NSDictionary]
+			let starPattern = starPatterns[pattern] as! [NSDictionary]
 			for starPoint in starPattern {
 				let x = starPoint["x"]?.floatValue
 				let y = starPoint["y"]?.floatValue
@@ -221,13 +221,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 		// Remove game objects that have passed by
 		foregroundNode.enumerateChildNodesWithName("NODE_PLATFORM", usingBlock: {
 			(node, stop) in
-			let platform = node as PlatformNode
+			let platform = node as! PlatformNode
 			platform.checkNodeRemoval(self.player.position.y)
 		})
 
 		foregroundNode.enumerateChildNodesWithName("NODE_STAR", usingBlock: {
 			(node, stop) in
-			let star = node as StarNode
+			let star = node as! StarNode
 			star.checkNodeRemoval(self.player.position.y)
 		})
 
@@ -352,7 +352,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 	}
 
 	// Handle touch events
-	override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+	override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
 
 		// 1
 		// If we're already playing, ignore touches
@@ -408,7 +408,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
 		// 2
 		let whichNode = (contact.bodyA.node != player) ? contact.bodyA.node : contact.bodyB.node
-		let other = whichNode as GameObjectNode
+		let other = whichNode as! GameObjectNode
 
 		// 3
 		updateHUD = other.collisionWithPlayer(player)

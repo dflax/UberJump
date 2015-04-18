@@ -59,7 +59,7 @@ class EndGameScene: SKScene {
 	}
 
 	// Transition back to the starting scene if the use wants to restart the game
-	override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+	override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
 
 		// Transition back to the Game
 		let reveal = SKTransition.fadeWithDuration(0.5)
